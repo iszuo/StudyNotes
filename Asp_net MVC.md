@@ -1,3 +1,5 @@
+
+
 # 控制器向视图传值（ViewData、ViewBag、TempData）
 
 1. ViewData
@@ -409,9 +411,273 @@ Html.Hidden()				// 输出<input type=”hidden”/>标签
   
   ```
 
-  
+
+# 注解模型
+
+1. 模型中添加注解
+
+   在模型字段前，通过注释，添加验证
+
+   1. [Required(ErrorMessage="错误信息")]
+   2. [StringLength(50,ErrorMessage="错误信息")]
+   3. [StringLength(12,MinimumLength =3, ErrorMessage = "密码长度3-12位")]
+   4. [Range(1,50,ErrorMessage="错误信息")]
+   5. [Range(typeof(decimal),1,50,ErrorMessage="错误信息")]
+   6. [Compare("表单字段",ErrorMessage="错误信息")]
+   7. [RegularExpression("pattern",ErrorMessage="错误信息")]  匹配正则表达式 
+
+   - **设置别名[Display(Name="  ")]**
+
+2. 服务器端控制器视图动作中
+
+   ```
+   if ( ModelState.IsValid ) {
+   	ModelState.AddModelError(" ","用户名密码不匹配")；
+   }
+   ```
+
+3. 视图中
+
+   @Html.ValidationSummary( )方法集中显示错误提示信息
+
+   @Html.ValidationMessage("id") 显示相应字段的错误提示信息
+
+例：
+
+```c#
+// 先引入命名空间
+using System.ComponentModel.DataAnnotations;
+// 在类中使用
+public class Student
+{
+    public string id{ get; set; }
+    
+    [Required(ErrorMessage = "姓名必须填写")]
+    [StringLength(50,ErrorMessage = "长度在3-50之间",MinimumLength = 3)]
+    public string name{ get; set; }
+    
+    [Range(1,150,ErrorMessage = "年龄在1~150直接")]
+    public string age { get; set; }
+    
+    [Range(50,250,ErrorMessage = "身高在50-250之间")
+    public decimal height { get; set; }
+    
+    [RegularExpression("^[12][0-9][0-9][0-9][.-/][01][0-9][.-/][0123][0-9]$", ErrorMessage = "邮箱格式不正确")]
+    public DateTime birthday { get; set; }
+    
+    [RegularExpression("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", ErrorMessage = "邮箱格式不正确")]
+        public string email { get; set; }
+    }
+     
+// 控制器
+[HttpPost]
+public ActionResult Contact(Student s)
+{
+    if (ModelState.IsValid)
+    {
+        ViewBag.msg = "注册成功";
+    }
+    return View();
+}
+     
+// 视图
+@using (Html.BeginForm("Contact", "Home", FormMethod.Post))
+{
+    <p>
+        姓名：@Html.TextBox("name")
+        @Html.ValidationMessage("name")
+    </p>
+    <p>
+        年龄：@Html.TextBox("age")
+        @Html.ValidationMessage("age")
+    </p>
+    <p>
+        身高：@Html.TextBox("height")
+        @Html.ValidationMessage("height")
+    </p>
+    <p>
+        生日：@Html.TextBox("birthday")
+        @Html.ValidationMessage("birthday")
+    </p>
+    <p>
+        邮箱：@Html.TextBox("email")
+        @Html.ValidationMessage("email")
+    </p>
+    <input type="submit" value="注册" />
+    @Html.ValidationSummary();
+    <br />
+    @ViewBag.msg
+}
+```
+
+# Html辅助类型及强方法
+
+## 普通Html辅助方法
+
+1. @Html.Lable(元素名称，元素值，元素属性)
+
+   ```c#
+   @Html.Lable("GenreName","流行",new { @class="validation" })
+   // 渲染之后代码如下
+   <label class="validation" for="GenreName">流行</label>
+   ```
+
+2. @Html.TextBox("元素名称"，元素值，元素格式，元素属性)
+
+   ```c#
+   @Html.TextBox("title", "2.5",string.Format("{0:C}",2.5) new { @class = "validation" })
+   // 渲染之后源码如下
+   <input class="validation" id="title" name="title" type="text" value="¥2.50" />
+   ```
+
+3. @Html.Editor(元素名称，模板名称，Id名称，指定模板)
+
+   ```c#
+   @Html.Editor("title",Model.Title,"Title",Model)
+   // 渲染之后源码如下
+   <input class="text-box single-line" id="Title" name="Title" type="text" value="Details" />
+   ```
+
+4. @Html.Display(元素名称，模板名称，Id名称，指定模板)
+
+   ```c#
+   @Html.Display("title", "", "Title", Model)
+   // 渲染之后源码如下
+   Details
+   // 原因：该辅助方法返回为纯文本。
+   ```
+
+## 强类型Html辅助方法
+
+1. @Html.LableFor(for名称，元素值，属性)
+
+   ```c#
+   @Html.LabelFor(mode => mode.GenreId, "Genre", new { @class="validation" })
+   // 渲染之后源码如下
+   <label class="validation" for="GenreId">Genre</label>;
+   ```
+
+2. @Html.TextBoxFor("元素名称"，元素值，元素格式，元素属性)
+
+   ```c#
+   @Html.TextBoxFor(model => model.Title, string.Format("{0:C}", 2.5), new { @class = "validation" });
+   // 渲染之后源码如下
+   <input class="validation" id="Title" name="Title" type="text" value="" />;
+   ```
+
+3. @Html.Editor(元素名称，模板名称，Id名称，指定模板)
+
+   ```c#
+   @Html.EditorFor(model=>model.Price,"","Price",Model)
+   // 渲染之后源码如下
+   <input class="text-box single-line" data-val="true" data-val-number="The field Price must be a number." data-val-range="Price must be between 0.01 and 100.00" data-val-range-max="100" data-val-range-min="0.01" data-val-required="Price is Required" id="Price" name="Price" type="text" value="1.00" />
+   ```
+
+4. @Html.Display(元素名称，模板名称，Id名称，指定模板)
+
+   ```c#
+   @Html.DisplayFor(model => model.Title, "", "Title", Model)
+   // 渲染之后源码如下
+   Details
+   ```
 
 
 
+# Ajax
 
+**需要提前引入jquery。**
+
+## jquery方法
+
+| 名称                         | 值/描述                               |
+| ---------------------------- | ------------------------------------- |
+| url                          | 规定发送请求的 URL。默认是当前页面。  |
+| type                         | 规定请求的类型（GET 或 POST）。发     |
+| jsonp                        | 在一个 jsonp 中重写回调函数的字符串。 |
+| jsonpCallback                | 在一个 jsonp 中规定回调函数的名称。   |
+| success(*result,status,xhr*) | 当请求成功时运行的函数。              |
+| error(*xhr,status,error*)    | 如果请求失败要运行的函数。            |
+
+```javascript
+// 例
+$("#btn").click(function () {
+    $.ajax({
+        // 提交地址
+        url: "/Home/ValidateUser",
+        // 提交类型
+        type: "post",
+        // 固定写法
+        contentType: "application/x-www-form-urlencoded",
+        // 前端向后端传递数据，多个参数用“，”分割
+        data: {
+            "username": $("#username").val()
+        },
+        // 成功后返回数据（data可以随便声明）
+        success: function (data) {
+            console.log(data);
+            if (data == "true") {
+                $("#msg").text("验证通过");
+            } else {
+                $("#msg").text("验证不通过");
+            }
+        },
+        // 错误后返回数据
+        error: function (data) {
+            if (data == "true") {
+                $("#msg").text("信息有误");
+            }
+        }
+    })
+})
+```
+
+## Mvc辅助方法
+
+| 名字                   | 返回值类型 | 含义                                                         |
+| ---------------------- | ---------- | ------------------------------------------------------------ |
+| Confirm                | string     | 在请求之前会弹出一个提示框，是否确认提交                     |
+| HttpMethod             | string     | 设置请求类型 Get、Post                                       |
+| UpdateTargetId         | String     | 标明html中一元素的id，把请求返回的数据/元素更新到该元素中    |
+| InsertionMode          | enum       | 把请求结果以何种方式更新到Dom元素中①Replace②InsertBefore③InsertAfter不设置的情况下，默认是Replace，只有在UpdateTargetId被设置后才有效 |
+| LoadingElementId       | string     | 标明html中一元素的id，在请求过程中，该元素会显示出来，请求结束后又隐藏 |
+| LoadingElementDuration | Int        | 控制Loading动画在显示/隐藏时的动画持续时间，单位为毫秒；默认情况下，动画将淡入淡出；这个时间即淡入淡出的时间（但经测试无效！！！） |
+| OnBegin                | string     | 标明js中一function的名称，在Ajax请求发送前，执行该方法，对应JQuery的beforeSend |
+| OnComplete             | String     | 标明js中一function的名称，在请求成功时，执行该方法，对应JQuery的complete |
+| OnFailure              | String     | 标明js中一function的名称，在请求失败时，执行该方法，对应JQuery的error |
+| OnSuccess              | String     | 标明js中一function的名称，无论请求成功与否，都在请求完成时，执行该方法，对应JQuery的success |
+| Url                    | String     | 请求的地址                                                   |
+| AllowCache             | Bool       | 是否使用缓存                                                 |
+
+```c#
+// 例
+@Ajax.ActionLink("ActionLink", "Index", "Home", "https", "www.ayilaile.com:90", "title", new { id = 1, type = 1 }, new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "detailsID", InsertionMode = InsertionMode.Replace }, new{ id = "testid"})
+// 生成的链接为：https://www.ayilaile.com:90/Home/Index/1?type=1#title
+```
+
+
+
+# Api
+
+Http动词
+
+| 操作   | http动词     | 说明     |
+| ------ | ------------ | -------- |
+| Create | Post         | 新增数据 |
+| Read   | Get          | 读取资源 |
+| Update | Put（Patch） | 更新资源 |
+| Delete | Delete       | 删除资源 |
+
+
+
+# ActionResult派生类型
+
+|                    | 作用                         |
+| ------------------ | ---------------------------- |
+| ViewResult()       | 用于返回标准的视图页面       |
+| EmptyResult()      | 不返回任何数据               |
+| ContentResult()    | 以字符串的形式指定响应的内容 |
+| FileResult()       | 返回任意文档内容             |
+| JavaScriptResult() | 响应一段JavaScript脚本内容   |
+| view()             | 显示页面                     |
+| content()          | 返回文本                     |
 
