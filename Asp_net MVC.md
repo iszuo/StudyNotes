@@ -669,7 +669,59 @@ Http动词
 
 
 
-# ActionResult派生类型
+# Action跳转
+
+## 一、本controller下
+
+```cs
+RedirectToAction("Index");//一个参数时在本Controller下，不传入参数。
+```
+
+## 二、直接跳到别的controller
+
+```cs
+RedirectToAction(ActionName,ControllerName) //可以直接跳到别的Controller.
+```
+
+## 三、跳到其他controller
+
+```cs
+RedirectToRoute(new {controller="Home",action="Index"});//可跳到其他controller
+```
+
+## 四、跳到其他controller,带参数
+
+```csharp
+Response.Redirect("Index?id=1");//适用于本controller下的方法名称,可带参数。
+```
+
+## 五、本controller下的方法名称,可带参数
+
+```cs
+Response.Redirect("Index?id=1");//适用于本controller下的方法名称,可带参数。
+```
+
+## 六、controller下的方法名称
+
+```cs
+return Redirect("Index");//适用于本controller下的方法名称。
+```
+
+## 七、不经过执行controller的方法
+
+```cs
+return View("Index"); //直接显示对应的页面 不经过执行Controller的方法。
+return View("index",db.Player.ToList());
+// 视图页  数据       携带数据跳转视图
+```
+
+## 八、直接显示页面,不经过controller方法
+
+```cs
+return View("~/Views/Home/Index.aspx");//这种方法是写全路径,直接显示页面,不经过Controller方法
+```
+
+## ActionResult派生类型
 
 |                    | 作用                         |
 | ------------------ | ---------------------------- |
@@ -680,4 +732,3 @@ Http动词
 | JavaScriptResult() | 响应一段JavaScript脚本内容   |
 | view()             | 显示页面                     |
 | content()          | 返回文本                     |
-
