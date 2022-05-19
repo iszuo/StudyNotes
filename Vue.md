@@ -92,6 +92,40 @@ filters:{
 
 1. v-for： 遍历列表，对象，整数（从1开始） (是否设置key值，动态双向绑定)
 
+   ```vue
+   <div id="app">
+       <h4>显示部门</h4>
+       <ul>
+           <li v-for="item in deps">
+               <span v-text="item"></span>
+           </li>
+       </ul>
+       
+       <h4>输出信息</h4>
+       <ul>
+           <li v-for="(item,index) in emps">
+               <span>{{index+1}}、{{item.name}}&nbsp;&nbsp;{{item.age}}&nbsp;&nbsp;{{item.sex}}</span>
+           </li>
+       </ul>
+   </div>
+   <script>
+       var vm = new Vue({
+           el: "#app",
+           data:{
+               deps:['市场部','教学部','学工部'],
+               emps:[
+                   {name:'小黄',age:11,sex:'女'},
+                   {name:'小蓝',age:18,sex:'男'},
+                   {name:'小黑',age:12,sex:'女'},
+                   {name:'小紫',age:11,sex:'男'},
+               ]
+           }
+       })
+   </script>
+   ```
+
+   ![image-20220518172038875](https://s2.loli.net/2022/05/18/SdJimEOXuFZVALf.png)
+
 2. v-cloak    页面渲染完成后消失；如果不适用的话，每次刷新页面会出现闪的一下子；就好比王者英雄出了闪现
 
 3. v-bind： 动态绑定 缩写 
@@ -131,11 +165,61 @@ filters:{
 
 7. v-once  只渲染一次
 
-8. **v-on 事件处理（敲黑板！划重点）**缩写 @
+8. ###### v-on 事件处理，监听事件（敲黑板！划重点）    缩写 @
+
+   ```vue
+   <div id="app">  
+       <p> 
+           <input type="button" value="-" @click="del">
+           <input type="text" v-model="val">
+           <input type="button" value="+" v-on:click="add">
+       </p>
+   </div>
+   
+   <script>
+       var vm = new Vue({
+           el:"#app",
+           data:{
+               val: 0
+           },
+           methods:{
+               add:function(){ this.val++ },
+               del:function(){ if(this.val > 0) this.val-- },
+           }
+       })
+   </script>
+   ```
+
+   ![image-20220518163529830](https://s2.loli.net/2022/05/18/GfDcJR1rQvsVSqh.png)
 
 9. v-pre  跳出渲染
 
 10. v-if   条件判断，当然还有配套的v-else、v-else-if
+
+    ```vue
+    <div id="app">
+        <h3>v-if和v-else的使用</h3>
+        <p v-if="isShow">段落1</p>
+        <p v-else>段落2</p>
+    
+        <p v-if="val=='A'">A</p>
+        <p v-else-if="val=='B'">B</p>
+        <p v-else>C</p>
+        
+        <p v-show="isShow">段落3</p>
+    </div>
+    <script>
+        var vm = new Vue({
+            el:"#app",
+            data:{
+                isShow:true,
+                val:'K'
+            }
+        })
+    </script>
+    ```
+
+    ![image-20220518161413002](https://s2.loli.net/2022/05/18/2M6wSaHhFTxcrQW.png)
 
 ## 自定义指令
 
@@ -165,4 +249,6 @@ filters:{
    
    ```
 
-   
+
+# 事件
+
