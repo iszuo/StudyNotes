@@ -1,8 +1,41 @@
-注：先在“依赖项（引用）”添加NuGet包——搜索“servicesta”
+
+
+# Redis常用命令
+
+## 基本命令
+
+![image-20220614090325231](https://s2.loli.net/2022/06/14/HEG1xMkof7KbNjr.png)
+
+## 哈希表（重点）
+
+![image-20220614143135300](https://s2.loli.net/2022/06/14/pYWZ5vhtPdaSJHg.png)
+
+## 列表类型
+
+![image-20220614144239211](https://s2.loli.net/2022/06/14/ef3dCUqL9u7RnXt.png)
+
+## 集合类型
+
+![image-20220614150733663](https://s2.loli.net/2022/06/14/Z2JY8b5FczVANPp.png)
+
+## 有序集合类型
+
+![202206141527705.png](https://s2.loli.net/2022/06/14/cozt3vBrOqNjPVm.png)
+
+## Redis内存回收
+
+![image-20220614154823051](https://s2.loli.net/2022/06/14/JUgY7QGD8Eh9wOr.png)
+
+------
+
+
+
+- 注：先在“依赖项（引用）”添加NuGet包——搜索“servicesta”
 
 ![514161242514](https://s2.loli.net/2022/05/14/eZWt6kbBm7KTUao.png)
 
-视频     [C#.NET Core + Redis](https://www.bilibili.com/video/BV1mY4y1i7R3?p=3)
+- 视频     [C#.NET Core + Redis](https://www.bilibili.com/video/BV1mY4y1i7R3?p=3)
+
 
 # Redis数据类型
 
